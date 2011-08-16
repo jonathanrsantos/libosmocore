@@ -68,7 +68,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = codec crypt vty
+DIST_SUBDIRS = codec crypt gsm core vty
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -210,8 +210,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@ENABLE_VTY_FALSE@SUBDIRS = codec crypt
-@ENABLE_VTY_TRUE@SUBDIRS = vty codec crypt
+@ENABLE_VTY_FALSE@SUBDIRS = codec crypt gsm core
+@ENABLE_VTY_TRUE@SUBDIRS = vty codec crypt gsm core
 all: all-recursive
 
 .SUFFIXES:
