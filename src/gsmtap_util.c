@@ -32,10 +32,9 @@
 #include <osmocom/gsm/protocol/gsm_04_08.h>
 #include <osmocom/gsm/rsl.h>
 
-#include <arpa/inet.h>
-#include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/in.h>
+
+#include <arpa/inet.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -111,6 +110,11 @@ struct msgb *gsmtap_makemsg(uint16_t arfcn, uint8_t ts, uint8_t chan_type,
 	return msg;
 }
 
+#ifdef HAVE_SYS_SOCKET_H
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 /* Open a GSMTAP source (sending) socket, conncet it to host/port and
  * return resulting fd */
 int gsmtap_source_init_fd(const char *host, uint16_t port)
@@ -120,7 +124,8 @@ int gsmtap_source_init_fd(const char *host, uint16_t port)
 	if (host == NULL)
 		host = "localhost";
 
-	return osmo_sock_init(AF_UNSPEC, SOCK_DGRAM, IPPROTO_UDP, host, port, 0);
+	return osmo_sock_init(AF_UNSPEC, SOCK_DGRAM, IPPROTO_UDP, host, port,
+				OSMO_SOCK_F_CONNECT);
 }
 
 int gsmtap_source_add_sink_fd(int gsmtap_fd)
@@ -134,7 +139,8 @@ int gsmtap_source_add_sink_fd(int gsmtap_fd)
 		return rc;
 
 	if (osmo_sockaddr_is_local((struct sockaddr *)&ss, ss_len) == 1) {
-		rc = osmo_sock_init_sa((struct sockaddr *)&ss, SOCK_DGRAM, IPPROTO_UDP, 1);
+		rc = osmo_sock_init_sa((struct sockaddr *)&ss, SOCK_DGRAM,
+					IPPROTO_UDP, OSMO_SOCK_F_BIND);
 		if (rc >= 0)
 			return rc;
 	}
@@ -142,10 +148,11 @@ int gsmtap_source_add_sink_fd(int gsmtap_fd)
 	return -ENODEV;
 }
 
-#ifdef HAVE_SYS_SELECT_H
-
 int gsmtap_sendmsg(struct gsmtap_inst *gti, struct msgb *msg)
 {
+	if (!gti)
+		return -ENODEV;
+
 	if (gti->ofd_wq_mode)
 		return osmo_wqueue_enqueue(&gti->wq, msg);
 	else {
@@ -173,6 +180,9 @@ int gsmtap_send(struct gsmtap_inst *gti, uint16_t arfcn, uint8_t ts,
 {
 	struct msgb *msg;
 
+	if (!gti)
+		return -ENODEV;
+
 	msg = gsmtap_makemsg(arfcn, ts, chan_type, ss, fn, signal_dbm,
 			     snr, data, len);
 	if (!msg)
@@ -189,16 +199,13 @@ static int gsmtap_wq_w_cb(struct osmo_fd *ofd, struct msgb *msg)
 	rc = write(ofd->fd, msg->data, msg->len);
 	if (rc < 0) {
 		perror("writing msgb to gsmtap fd");
-		msgb_free(msg);
 		return rc;
 	}
 	if (rc != msg->len) {
 		perror("short write to gsmtap fd");
-		msgb_free(msg);
 		return -EIO;
 	}
 
-	msgb_free(msg);
 	return 0;
 }
 
@@ -270,4 +277,4 @@ struct gsmtap_inst *gsmtap_source_init(const char *host, uint16_t port,
 	return gti;
 }
 
-#endif /* HAVE_SYS_SELECT_H */
+#endif /* HAVE_SYS_SOCKET_H */

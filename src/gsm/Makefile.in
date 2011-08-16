@@ -40,7 +40,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -73,7 +73,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libosmogsm_la_DEPENDENCIES = $(top_builddir)/src/libosmocore.la
 am_libosmogsm_la_OBJECTS = a5.lo rxlev_stat.lo tlv_parser.lo \
 	comp128.lo gsm_utils.lo rsl.lo gsm48.lo gsm48_ie.lo gsm0808.lo \
-	gprs_cipher_core.lo gsm0480.lo
+	sysinfo.lo gprs_cipher_core.lo gsm0480.lo abis_nm.lo \
+	gsm0502.lo
 libosmogsm_la_OBJECTS = $(am_libosmogsm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -235,8 +236,8 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/include
 AM_CFLAGS = -fPIC -Wall
 lib_LTLIBRARIES = libosmogsm.la
 libosmogsm_la_SOURCES = a5.c rxlev_stat.c tlv_parser.c comp128.c gsm_utils.c \
-                        rsl.c gsm48.c gsm48_ie.c gsm0808.c \
-			gprs_cipher_core.c gsm0480.c
+                        rsl.c gsm48.c gsm48_ie.c gsm0808.c sysinfo.c \
+			gprs_cipher_core.c gsm0480.c abis_nm.c gsm0502.c
 
 libosmogsm_la_LDFLAGS = -version-info $(LIBVERSION)
 libosmogsm_la_LIBADD = $(top_builddir)/src/libosmocore.la
@@ -315,15 +316,18 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/a5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/abis_nm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comp128.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gprs_cipher_core.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0480.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0502.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0808.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm48.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm48_ie.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm_utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rxlev_stat.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sysinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tlv_parser.Plo@am__quote@
 
 .c.o:

@@ -42,7 +42,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -59,9 +59,9 @@ SOURCES =
 DIST_SOURCES =
 am__osmocore_HEADERS_DIST = signal.h linuxlist.h timer.h select.h \
 	msgb.h bits.h bitvec.h statistics.h utils.h socket.h gsmtap.h \
-	write_queue.h logging.h rate_ctr.h gsmtap_util.h plugin.h \
-	crc16.h panic.h process.h msgfile.h backtrace.h conv.h \
-	application.h talloc.h
+	write_queue.h prim.h logging.h rate_ctr.h gsmtap_util.h \
+	plugin.h crc16.h panic.h process.h msgfile.h backtrace.h \
+	conv.h application.h talloc.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -205,8 +205,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 osmocore_HEADERS = signal.h linuxlist.h timer.h select.h msgb.h bits.h \
 	bitvec.h statistics.h utils.h socket.h gsmtap.h write_queue.h \
-	logging.h rate_ctr.h gsmtap_util.h plugin.h crc16.h panic.h \
-	process.h msgfile.h backtrace.h conv.h application.h \
+	prim.h logging.h rate_ctr.h gsmtap_util.h plugin.h crc16.h \
+	panic.h process.h msgfile.h backtrace.h conv.h application.h \
 	$(am__append_1)
 osmocoredir = $(includedir)/osmocom/core
 all: all-am
