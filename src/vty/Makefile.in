@@ -81,6 +81,9 @@ libosmovty_la_OBJECTS = $(am_libosmovty_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
+libosmovty_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libosmovty_la_LDFLAGS) $(LDFLAGS) -o $@
 @ENABLE_VTY_TRUE@am_libosmovty_la_rpath = -rpath $(libdir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -238,6 +241,7 @@ AM_CFLAGS = -fPIC -Wall
 @ENABLE_VTY_TRUE@libosmovty_la_SOURCES = buffer.c command.c vty.c vector.c utils.c \
 @ENABLE_VTY_TRUE@			telnet_interface.c logging_vty.c
 
+@ENABLE_VTY_TRUE@libosmovty_la_LDFLAGS = -version-info $(LIBVERSION)
 @ENABLE_VTY_TRUE@libosmovty_la_LIBADD = $(top_builddir)/src/libosmocore.la
 all: all-am
 
@@ -305,7 +309,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libosmovty.la: $(libosmovty_la_OBJECTS) $(libosmovty_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(LINK) $(am_libosmovty_la_rpath) $(libosmovty_la_OBJECTS) $(libosmovty_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libosmovty_la_LINK) $(am_libosmovty_la_rpath) $(libosmovty_la_OBJECTS) $(libosmovty_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
