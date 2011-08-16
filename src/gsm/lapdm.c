@@ -594,6 +594,7 @@ static void lapdm_t200_cb(void *data)
 			rsl_rll_error(RLL_CAUSE_T200_EXPIRED, &dl->mctx);
 			/* flush tx buffers */
 			lapdm_dl_flush_tx(dl);
+			lapdm_dl_flush_send(dl);
 			/* go back to idle state */
 			lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 			/* NOTE: we must not change any other states or buffers
@@ -893,6 +894,8 @@ static int lapdm_rx_u(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 			/* reset Timer T200 */
 			osmo_timer_del(&dl->t200);
 			/* go to idle state */
+			lapdm_dl_flush_tx(dl);
+			lapdm_dl_flush_send(dl);
 			lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 			rc = send_rll_simple(RSL_MT_REL_CONF, mctx);
 			msgb_free(msg);
@@ -1024,6 +1027,8 @@ static int lapdm_rx_u(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 		/* reset Timer T200 */
 		osmo_timer_del(&dl->t200);
 		/* enter idle state */
+		lapdm_dl_flush_tx(dl);
+		lapdm_dl_flush_send(dl);
 		lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 		/* send notification to L3 */
 		rc = send_rll_simple(rsl_msg, mctx);
@@ -1074,6 +1079,8 @@ static int lapdm_rx_u(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 			/* reset Timer T200 */
 			osmo_timer_del(&dl->t200);
 			/* go to idle state */
+			lapdm_dl_flush_tx(dl);
+			lapdm_dl_flush_send(dl);
 			lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 			rc = send_rll_simple(RSL_MT_REL_CONF, mctx);
 			msgb_free(msg);
@@ -1096,6 +1103,8 @@ static int lapdm_rx_u(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 				rc = send_rll_simple(RSL_MT_REL_IND, mctx);
 				msgb_free(msg);
 				/* go to idle state */
+				lapdm_dl_flush_tx(dl);
+				lapdm_dl_flush_send(dl);
 				lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 				return 0;
 			}
@@ -1108,6 +1117,8 @@ static int lapdm_rx_u(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 				rc = send_rll_simple(RSL_MT_REL_IND, mctx);
 				msgb_free(msg);
 				/* go to idle state */
+				lapdm_dl_flush_tx(dl);
+				lapdm_dl_flush_send(dl);
 				lapdm_dl_newstate(dl, LAPDm_STATE_IDLE);
 				return 0;
 			}
@@ -1573,52 +1584,60 @@ static int lapdm_ph_data_ind(struct msgb *msg, struct lapdm_msg_ctx *mctx)
 static int l2_ph_data_ind(struct msgb *msg, struct lapdm_entity *le, uint8_t chan_nr, uint8_t link_id)
 {
 	uint8_t cbits = chan_nr >> 3;
-	uint8_t sapi = link_id & 7;
+	uint8_t sapi; /* we cannot take SAPI from link_id, as L1 has no clue */
 	struct lapdm_msg_ctx mctx;
 	int rc = 0;
 
 	/* when we reach here, we have a msgb with l2h pointing to the raw
 	 * 23byte mac block. The l1h has already been purged. */
 
-	mctx.dl = datalink_for_sapi(le, sapi);
 	mctx.chan_nr = chan_nr;
 	mctx.link_id = link_id;
 	mctx.addr = mctx.ctrl = 0;
-
-	/* G.2.1 No action schall be taken on frames containing an unallocated
-	 * SAPI.
-	 */
-	if (!mctx.dl) {
-		LOGP(DLLAPDM, LOGL_NOTICE, "Received frame for unsupported "
-			"SAPI %d!\n", sapi);
-		return -EINVAL;
-		msgb_free(msg);
-		return -EIO;
-	}
 
 	/* check for L1 chan_nr/link_id and determine LAPDm hdr format */
 	if (cbits == 0x10 || cbits == 0x12) {
 		/* Format Bbis is used on BCCH and CCCH(PCH, NCH and AGCH) */
 		mctx.lapdm_fmt = LAPDm_FMT_Bbis;
 		mctx.n201 = N201_Bbis;
+		sapi = 0;
 	} else {
 		if (mctx.link_id & 0x40) {
-			/* It was received from network on SACCH, thus
-			 * lapdm_fmt must be B4 */
-			mctx.lapdm_fmt = LAPDm_FMT_B4;
-			mctx.n201 = N201_B4;
-			LOGP(DLLAPDM, LOGL_INFO, "fmt=B4\n");
+			/* It was received from network on SACCH */
+
+			/* If sent by BTS, lapdm_fmt must be B4 */
+			if (le->mode == LAPDM_MODE_MS) {
+				mctx.lapdm_fmt = LAPDm_FMT_B4;
+				mctx.n201 = N201_B4;
+				LOGP(DLLAPDM, LOGL_INFO, "fmt=B4\n");
+			} else {
+				mctx.lapdm_fmt = LAPDm_FMT_B;
+				mctx.n201 = N201_AB_SACCH;
+				LOGP(DLLAPDM, LOGL_INFO, "fmt=B\n");
+			}
 			/* SACCH frames have a two-byte L1 header that
 			 * OsmocomBB L1 doesn't strip */
 			mctx.tx_power_ind = msg->l2h[0] & 0x1f;
 			mctx.ta_ind = msg->l2h[1];
 			msgb_pull(msg, 2);
 			msg->l2h += 2;
+			sapi = (msg->l2h[0] >> 2) & 7;
 		} else {
 			mctx.lapdm_fmt = LAPDm_FMT_B;
 			LOGP(DLLAPDM, LOGL_INFO, "fmt=B\n");
 			mctx.n201 = 23; // FIXME: select correct size by chan.
+			sapi = (msg->l2h[0] >> 2) & 7;
 		}
+	}
+
+	mctx.dl = datalink_for_sapi(le, sapi);
+	/* G.2.1 No action on frames containing an unallocated SAPI. */
+	if (!mctx.dl) {
+		LOGP(DLLAPDM, LOGL_NOTICE, "Received frame for unsupported "
+			"SAPI %d!\n", sapi);
+		return -EINVAL;
+		msgb_free(msg);
+		return -EIO;
 	}
 
 	switch (mctx.lapdm_fmt) {
