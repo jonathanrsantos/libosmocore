@@ -59,6 +59,8 @@ enum gsm_band gsm_band_parse(const char *mhz);
 int gsm_7bit_decode(char *decoded, const uint8_t *user_data, uint8_t length);
 int gsm_7bit_encode(uint8_t *result, const char *data);
 
+unsigned int ms_class_gmsk_dbm(enum gsm_band band, int class);
+
 int ms_pwr_ctl_lvl(enum gsm_band band, unsigned int dbm);
 int ms_pwr_dbm(enum gsm_band band, uint8_t lvl);
 
@@ -113,5 +115,31 @@ enum gprs_tlli_type {
 int gprs_tlli_type(uint32_t tlli);
 
 uint32_t gprs_tmsi2tlli(uint32_t p_tmsi, enum gprs_tlli_type type);
+
+/* Osmocom internal, not part of any gsm spec */
+enum gsm_phys_chan_config {
+	GSM_PCHAN_NONE,
+	GSM_PCHAN_CCCH,
+	GSM_PCHAN_CCCH_SDCCH4,
+	GSM_PCHAN_TCH_F,
+	GSM_PCHAN_TCH_H,
+	GSM_PCHAN_SDCCH8_SACCH8C,
+	GSM_PCHAN_PDCH,		/* GPRS PDCH */
+	GSM_PCHAN_TCH_F_PDCH,	/* TCH/F if used, PDCH otherwise */
+	GSM_PCHAN_UNKNOWN,
+	_GSM_PCHAN_MAX
+};
+
+/* Osmocom internal, not part of any gsm spec */
+enum gsm_chan_t {
+	GSM_LCHAN_NONE,
+	GSM_LCHAN_SDCCH,
+	GSM_LCHAN_TCH_F,
+	GSM_LCHAN_TCH_H,
+	GSM_LCHAN_UNKNOWN,
+	GSM_LCHAN_CCCH,
+	_GSM_LCHAN_MAX
+};
+
 
 #endif

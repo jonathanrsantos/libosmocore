@@ -41,7 +41,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -236,7 +236,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 osmogsm_HEADERS = a5.h comp128.h gsm0808.h gsm48_ie.h mncc.h rxlev_stat.h \
-		  gsm0480.h gsm48.h gsm_utils.h rsl.h tlv.h
+		  gsm0480.h gsm48.h gsm_utils.h rsl.h tlv.h abis_nm.h \
+		  sysinfo.h prim.h gsm0502.h
 
 SUBDIRS = protocol
 osmogsmdir = $(includedir)/osmocom/gsm

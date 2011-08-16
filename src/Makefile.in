@@ -43,7 +43,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -77,16 +77,16 @@ libosmocore_la_LIBADD =
 am__libosmocore_la_SOURCES_DIST = timer.c select.c signal.c msgb.c \
 	bits.c bitvec.c statistics.c write_queue.c utils.c socket.c \
 	logging.c logging_syslog.c rate_ctr.c gsmtap_util.c crc16.c \
-	panic.c backtrace.c process.c conv.c application.c plugin.c \
-	talloc.c msgfile.c
+	panic.c backtrace.c conv.c application.c plugin.c talloc.c \
+	msgfile.c
 @ENABLE_PLUGIN_TRUE@am__objects_1 = plugin.lo
 @ENABLE_TALLOC_TRUE@am__objects_2 = talloc.lo
 @ENABLE_MSGFILE_TRUE@am__objects_3 = msgfile.lo
 am_libosmocore_la_OBJECTS = timer.lo select.lo signal.lo msgb.lo \
 	bits.lo bitvec.lo statistics.lo write_queue.lo utils.lo \
 	socket.lo logging.lo logging_syslog.lo rate_ctr.lo \
-	gsmtap_util.lo crc16.lo panic.lo backtrace.lo process.lo \
-	conv.lo application.lo $(am__objects_1) $(am__objects_2) \
+	gsmtap_util.lo crc16.lo panic.lo backtrace.lo conv.lo \
+	application.lo $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libosmocore_la_OBJECTS = $(am_libosmocore_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -291,7 +291,7 @@ lib_LTLIBRARIES = libosmocore.la
 libosmocore_la_SOURCES = timer.c select.c signal.c msgb.c bits.c \
 	bitvec.c statistics.c write_queue.c utils.c socket.c logging.c \
 	logging_syslog.c rate_ctr.c gsmtap_util.c crc16.c panic.c \
-	backtrace.c process.c conv.c application.c $(am__append_1) \
+	backtrace.c conv.c application.c $(am__append_1) \
 	$(am__append_2) $(am__append_3)
 @ENABLE_PLUGIN_FALSE@libosmocore_la_LDFLAGS = -version-info $(LIBVERSION)
 @ENABLE_PLUGIN_TRUE@libosmocore_la_LDFLAGS = -version-info $(LIBVERSION) -ldl
@@ -382,7 +382,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msgfile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/panic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plugin.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rate_ctr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/select.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Plo@am__quote@
