@@ -75,20 +75,16 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libosmocore_la_LIBADD =
 am__libosmocore_la_SOURCES_DIST = timer.c select.c signal.c msgb.c \
-	rxlev_stat.c bits.c tlv_parser.c bitvec.c comp128.c \
-	gsm_utils.c statistics.c write_queue.c utils.c rsl.c gsm48.c \
-	gsm48_ie.c logging.c logging_syslog.c gsm0808.c rate_ctr.c \
-	gsmtap_util.c gprs_cipher_core.c crc16.c panic.c process.c \
-	gsm0480.c plugin.c talloc.c msgfile.c
+	bits.c bitvec.c statistics.c write_queue.c utils.c logging.c \
+	logging_syslog.c rate_ctr.c gsmtap_util.c crc16.c panic.c \
+	backtrace.c process.c plugin.c talloc.c msgfile.c
 @ENABLE_PLUGIN_TRUE@am__objects_1 = plugin.lo
 @ENABLE_TALLOC_TRUE@am__objects_2 = talloc.lo
 @ENABLE_MSGFILE_TRUE@am__objects_3 = msgfile.lo
 am_libosmocore_la_OBJECTS = timer.lo select.lo signal.lo msgb.lo \
-	rxlev_stat.lo bits.lo tlv_parser.lo bitvec.lo comp128.lo \
-	gsm_utils.lo statistics.lo write_queue.lo utils.lo rsl.lo \
-	gsm48.lo gsm48_ie.lo logging.lo logging_syslog.lo gsm0808.lo \
-	rate_ctr.lo gsmtap_util.lo gprs_cipher_core.lo crc16.lo \
-	panic.lo process.lo gsm0480.lo $(am__objects_1) \
+	bits.lo bitvec.lo statistics.lo write_queue.lo utils.lo \
+	logging.lo logging_syslog.lo rate_ctr.lo gsmtap_util.lo \
+	crc16.lo panic.lo backtrace.lo process.lo $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3)
 libosmocore_la_OBJECTS = $(am_libosmocore_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -282,7 +278,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = . vty codec
+SUBDIRS = . vty codec gsm
 
 # This is _NOT_ the library release version, it's an API version.
 # Please read Chapter 6 "Library interface versions" of the libtool documentation before making any modification
@@ -290,12 +286,11 @@ LIBVERSION = 0:0:0
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
 AM_CFLAGS = -fPIC -Wall
 lib_LTLIBRARIES = libosmocore.la
-libosmocore_la_SOURCES = timer.c select.c signal.c msgb.c rxlev_stat.c \
-	bits.c tlv_parser.c bitvec.c comp128.c gsm_utils.c \
-	statistics.c write_queue.c utils.c rsl.c gsm48.c gsm48_ie.c \
-	logging.c logging_syslog.c gsm0808.c rate_ctr.c gsmtap_util.c \
-	gprs_cipher_core.c crc16.c panic.c process.c gsm0480.c \
-	$(am__append_1) $(am__append_2) $(am__append_3)
+libosmocore_la_SOURCES = timer.c select.c signal.c msgb.c bits.c \
+	bitvec.c statistics.c write_queue.c utils.c logging.c \
+	logging_syslog.c rate_ctr.c gsmtap_util.c crc16.c panic.c \
+	backtrace.c process.c $(am__append_1) $(am__append_2) \
+	$(am__append_3)
 @ENABLE_PLUGIN_TRUE@libosmocore_la_LDFLAGS = -ldl
 all: all-recursive
 
@@ -371,16 +366,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/backtrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bits.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bitvec.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comp128.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc16.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gprs_cipher_core.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0480.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0808.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm48.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm48_ie.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm_utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsmtap_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logging_syslog.Plo@am__quote@
@@ -390,14 +379,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rate_ctr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rxlev_stat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/select.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statistics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tlv_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/write_queue.Plo@am__quote@
 
