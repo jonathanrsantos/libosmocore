@@ -1,3 +1,9 @@
+libosmocore (0.3.3-0~jrsantos.1) unstable; urgency=low
+
+  * New upstream version 0.3.3
+
+ -- Jonathan Santos <jrsantos@jonathanrsantos.com>  Tue, 16 Aug 2011 15:14:43 -0400
+
 libosmocore (0.3.2-0~jrsantos.1) unstable; urgency=low
 
   * New upstream version 0.3.2
