@@ -20,8 +20,7 @@
  *
  */
 
-
-#include <sys/types.h>
+#include <string.h>
 
 #include <osmocom/core/linuxlist.h>
 #include <osmocom/core/talloc.h>
@@ -31,9 +30,9 @@ static LLIST_HEAD(counters);
 
 void *tall_ctr_ctx;
 
-struct counter *counter_alloc(const char *name)
+struct osmo_counter *osmo_counter_alloc(const char *name)
 {
-	struct counter *ctr = talloc_zero(tall_ctr_ctx, struct counter);
+	struct osmo_counter *ctr = talloc_zero(tall_ctr_ctx, struct osmo_counter);
 
 	if (!ctr)
 		return NULL;
@@ -44,15 +43,16 @@ struct counter *counter_alloc(const char *name)
 	return ctr;
 }
 
-void counter_free(struct counter *ctr)
+void osmo_counter_free(struct osmo_counter *ctr)
 {
 	llist_del(&ctr->list);
 	talloc_free(ctr);
 }
 
-int counters_for_each(int (*handle_counter)(struct counter *, void *), void *data)
+int osmo_counters_for_each(int (*handle_counter)(struct osmo_counter *, void *),
+			   void *data)
 {
-	struct counter *ctr;
+	struct osmo_counter *ctr;
 	int rc = 0;
 
 	llist_for_each_entry(ctr, &counters, list) {
@@ -64,3 +64,13 @@ int counters_for_each(int (*handle_counter)(struct counter *, void *), void *dat
 	return rc;
 }
 
+struct osmo_counter *osmo_counter_get_by_name(const char *name)
+{
+	struct osmo_counter *ctr;
+
+	llist_for_each_entry(ctr, &counters, list) {
+		if (!strcmp(ctr->name, name))
+			return ctr;
+	}
+	return NULL;
+}

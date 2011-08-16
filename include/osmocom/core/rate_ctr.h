@@ -75,7 +75,6 @@ static inline void rate_ctr_inc(struct rate_ctr *ctr)
 /* Initialize the counter module */
 int rate_ctr_init(void *tall_ctx);
 
-struct vty;
-void vty_out_rate_ctr_group(struct vty *vty, const char *prefix,
-			    struct rate_ctr_group *ctrg);
+struct rate_ctr_group *rate_ctr_get_group_by_name_idx(const char *name, const unsigned int idx);
+const struct rate_ctr *rate_ctr_get_by_name(const struct rate_ctr_group *ctrg, const char *name);
 #endif /* RATE_CTR_H */

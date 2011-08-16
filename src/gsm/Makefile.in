@@ -71,8 +71,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libosmogsm_la_DEPENDENCIES = $(top_builddir)/src/libosmocore.la
-am_libosmogsm_la_OBJECTS = rxlev_stat.lo tlv_parser.lo comp128.lo \
-	gsm_utils.lo rsl.lo gsm48.lo gsm48_ie.lo gsm0808.lo \
+am_libosmogsm_la_OBJECTS = a5.lo rxlev_stat.lo tlv_parser.lo \
+	comp128.lo gsm_utils.lo rsl.lo gsm48.lo gsm48_ie.lo gsm0808.lo \
 	gprs_cipher_core.lo gsm0480.lo
 libosmogsm_la_OBJECTS = $(am_libosmogsm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -231,7 +231,7 @@ LIBVERSION = 0:0:0
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
 AM_CFLAGS = -fPIC -Wall
 lib_LTLIBRARIES = libosmogsm.la
-libosmogsm_la_SOURCES = rxlev_stat.c tlv_parser.c comp128.c gsm_utils.c \
+libosmogsm_la_SOURCES = a5.c rxlev_stat.c tlv_parser.c comp128.c gsm_utils.c \
                         rsl.c gsm48.c gsm48_ie.c gsm0808.c \
 			gprs_cipher_core.c gsm0480.c
 
@@ -310,6 +310,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/a5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comp128.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gprs_cipher_core.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsm0480.Plo@am__quote@

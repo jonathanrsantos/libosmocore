@@ -60,7 +60,8 @@ DIST_SOURCES =
 am__osmocore_HEADERS_DIST = signal.h linuxlist.h timer.h select.h \
 	msgb.h bits.h bitvec.h statistics.h utils.h gsmtap.h \
 	write_queue.h logging.h rate_ctr.h gsmtap_util.h plugin.h \
-	crc16.h panic.h process.h msgfile.h backtrace.h talloc.h
+	crc16.h panic.h process.h msgfile.h backtrace.h conv.h \
+	talloc.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -205,7 +206,7 @@ top_srcdir = @top_srcdir@
 osmocore_HEADERS = signal.h linuxlist.h timer.h select.h msgb.h bits.h \
 	bitvec.h statistics.h utils.h gsmtap.h write_queue.h logging.h \
 	rate_ctr.h gsmtap_util.h plugin.h crc16.h panic.h process.h \
-	msgfile.h backtrace.h $(am__append_1)
+	msgfile.h backtrace.h conv.h $(am__append_1)
 osmocoredir = $(includedir)/osmocom/core
 all: all-am
 
