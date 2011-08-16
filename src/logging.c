@@ -72,6 +72,28 @@ static const struct log_info_cat internal_cat[OSMO_NUM_DLIB] = {
 		.loglevel = LOGL_NOTICE,
 		.enabled = 1,
 	},
+	[INT2IDX(DLINP)] = {
+		.name = "DINP",
+		.description = "A-bis Intput Subsystem",
+		.loglevel = LOGL_NOTICE,
+		.enabled = 1,
+	},
+	[INT2IDX(DLMUX)] = {
+		.name = "DMUX",
+		.description = "A-bis B-Subchannel TRAU Frame Multiplex",
+		.loglevel = LOGL_NOTICE,
+		.enabled = 1,
+	},
+	[INT2IDX(DLMI)] = {
+		.name = "DMI",
+		.description = "A-bis Input Driver for Signalling",
+		.enabled = 0, .loglevel = LOGL_NOTICE,
+	},
+	[INT2IDX(DLMIB)] = {
+		.name = "DMIB",
+		.description = "A-bis Input Driver for B-Channels (voice)",
+		.enabled = 0, .loglevel = LOGL_NOTICE,
+	},
 };
 
 /* You have to keep this in sync with the structure loglevel_strs. */
@@ -261,7 +283,7 @@ static void _logp(int subsys, int level, char *file, int line,
 		 * in undefined state. Since _output uses vsnprintf and it may
 		 * be called several times, we have to pass a copy of ap. */
 		va_copy(bp, ap);
-		_output(tar, subsys, level, file, line, cont, format, ap);
+		_output(tar, subsys, level, file, line, cont, format, bp);
 		va_end(bp);
 	}
 }

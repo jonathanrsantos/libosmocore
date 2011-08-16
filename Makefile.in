@@ -259,6 +259,7 @@ SUBDIRS = include src tests
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libosmocore.pc libosmocodec.pc libosmovty.pc libosmogsm.pc
 BUILT_SOURCES = $(top_srcdir)/.version
+EXTRA_DIST = git-version-gen
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
