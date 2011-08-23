@@ -35,7 +35,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
+DIST_COMMON = $(am__configure_deps) $(srcdir)/Doxyfile.codec.in \
+	$(srcdir)/Doxyfile.core.in $(srcdir)/Doxyfile.gsm.in \
+	$(srcdir)/Doxyfile.vty.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/libosmocodec.pc.in $(srcdir)/libosmocore.pc.in \
 	$(srcdir)/libosmogsm.pc.in $(srcdir)/libosmovty.pc.in \
@@ -53,7 +55,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = libosmocore.pc libosmocodec.pc libosmovty.pc \
-	libosmogsm.pc
+	libosmogsm.pc Doxyfile.core Doxyfile.gsm Doxyfile.vty \
+	Doxyfile.codec
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
@@ -91,8 +94,9 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(pkgconfigdir)"
-DATA = $(pkgconfig_DATA)
+am__installdirs = "$(DESTDIR)$(doc_htmldir)" \
+	"$(DESTDIR)$(pkgconfigdir)"
+DATA = $(doc_html_DATA) $(pkgconfig_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
@@ -154,6 +158,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DOXYGEN = @DOXYGEN@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
@@ -221,6 +226,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
+@HAVE_DOXYGEN_TRUE@docdir = $(datadir)/doc
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
@@ -255,11 +261,16 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign dist-bzip2 1.6
 ACLOCAL_AMFLAGS = -I m4
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
-SUBDIRS = include src tests
+SUBDIRS = include src tests utils
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libosmocore.pc libosmocodec.pc libosmovty.pc libosmogsm.pc
 BUILT_SOURCES = $(top_srcdir)/.version
 EXTRA_DIST = git-version-gen
+@HAVE_DOXYGEN_TRUE@pkgdocdir = $(docdir)/$(PACKAGE)-$(VERSION)
+@HAVE_DOXYGEN_TRUE@doc_htmldir = $(pkgdocdir)/html
+@HAVE_DOXYGEN_TRUE@doc_html_DATA = $(top_builddir)/doc/html.tar
+@HAVE_DOXYGEN_TRUE@DX_CLEAN = doc/{core,gsm,vty,codec}/{html,latex}/* doc/html.tar
+MOSTLYCLEANFILES = $(DX_CLEAN)
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -323,6 +334,14 @@ libosmovty.pc: $(top_builddir)/config.status $(srcdir)/libosmovty.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 libosmogsm.pc: $(top_builddir)/config.status $(srcdir)/libosmogsm.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+Doxyfile.core: $(top_builddir)/config.status $(srcdir)/Doxyfile.core.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+Doxyfile.gsm: $(top_builddir)/config.status $(srcdir)/Doxyfile.gsm.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+Doxyfile.vty: $(top_builddir)/config.status $(srcdir)/Doxyfile.vty.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+Doxyfile.codec: $(top_builddir)/config.status $(srcdir)/Doxyfile.codec.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -332,6 +351,26 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
+install-doc_htmlDATA: $(doc_html_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(doc_htmldir)" || $(MKDIR_P) "$(DESTDIR)$(doc_htmldir)"
+	@list='$(doc_html_DATA)'; test -n "$(doc_htmldir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(doc_htmldir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(doc_htmldir)" || exit $$?; \
+	done
+
+uninstall-doc_htmlDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(doc_html_DATA)'; test -n "$(doc_htmldir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(doc_htmldir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(doc_htmldir)" && rm -f $$files
 install-pkgconfigDATA: $(pkgconfig_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(pkgconfigdir)" || $(MKDIR_P) "$(DESTDIR)$(pkgconfigdir)"
@@ -672,7 +711,7 @@ check: $(BUILT_SOURCES)
 all-am: Makefile $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(pkgconfigdir)"; do \
+	for dir in "$(DESTDIR)$(doc_htmldir)" "$(DESTDIR)$(pkgconfigdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -691,6 +730,7 @@ install-strip:
 	  `test -z '$(STRIP)' || \
 	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
@@ -702,6 +742,8 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+@HAVE_DOXYGEN_FALSE@install-data-hook:
+@HAVE_DOXYGEN_FALSE@uninstall-hook:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -724,8 +766,9 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-pkgconfigDATA
-
+install-data-am: install-doc_htmlDATA install-pkgconfigDATA
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
@@ -770,11 +813,12 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-pkgconfigDATA
-
+uninstall-am: uninstall-doc_htmlDATA uninstall-pkgconfigDATA
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
-	ctags-recursive install install-am install-strip \
-	tags-recursive
+	ctags-recursive install install-am install-data-am \
+	install-strip tags-recursive uninstall-am
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am am--refresh check check-am clean clean-generic \
@@ -783,7 +827,8 @@ uninstall-am: uninstall-pkgconfigDATA
 	dist-zip distcheck distclean distclean-generic distclean-hdr \
 	distclean-libtool distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
+	install install-am install-data install-data-am \
+	install-data-hook install-doc_htmlDATA install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
@@ -791,12 +836,45 @@ uninstall-am: uninstall-pkgconfigDATA
 	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-pkgconfigDATA
+	uninstall uninstall-am uninstall-doc_htmlDATA uninstall-hook \
+	uninstall-pkgconfigDATA
 
 $(top_srcdir)/.version:
 	echo $(VERSION) > $@-t && mv $@-t $@
 dist-hook:
 	echo $(VERSION) > $(distdir)/.tarball-version
+
+@HAVE_DOXYGEN_TRUE@$(doc_html_DATA): $(top_builddir)/doc/core/html/index.html \
+@HAVE_DOXYGEN_TRUE@		  $(top_builddir)/doc/gsm/html/index.html \
+@HAVE_DOXYGEN_TRUE@		  $(top_builddir)/doc/vty/html/index.html \
+@HAVE_DOXYGEN_TRUE@		  $(top_builddir)/doc/codec/html/index.html
+@HAVE_DOXYGEN_TRUE@	cd $(top_builddir)/doc && tar cf html.tar */html
+
+@HAVE_DOXYGEN_TRUE@$(top_builddir)/doc/core/html/index.html: $(SOURCES) Doxyfile.core
+@HAVE_DOXYGEN_TRUE@	@rm -rf doc/core
+@HAVE_DOXYGEN_TRUE@	mkdir -p doc/core
+@HAVE_DOXYGEN_TRUE@	$(DOXYGEN) Doxyfile.core
+
+@HAVE_DOXYGEN_TRUE@$(top_builddir)/doc/gsm/html/index.html: $(SOURCES) Doxyfile.gsm
+@HAVE_DOXYGEN_TRUE@	@rm -rf doc/gsm
+@HAVE_DOXYGEN_TRUE@	mkdir -p doc/gsm
+@HAVE_DOXYGEN_TRUE@	$(DOXYGEN) Doxyfile.gsm
+
+@HAVE_DOXYGEN_TRUE@$(top_builddir)/doc/vty/html/index.html: $(SOURCES) Doxyfile.vty
+@HAVE_DOXYGEN_TRUE@	@rm -rf doc/vty
+@HAVE_DOXYGEN_TRUE@	mkdir -p doc/vty
+@HAVE_DOXYGEN_TRUE@	$(DOXYGEN) Doxyfile.vty
+
+@HAVE_DOXYGEN_TRUE@$(top_builddir)/doc/codec/html/index.html: $(SOURCES) Doxyfile.codec
+@HAVE_DOXYGEN_TRUE@	@rm -rf doc/codec
+@HAVE_DOXYGEN_TRUE@	mkdir -p doc/codec
+@HAVE_DOXYGEN_TRUE@	$(DOXYGEN) Doxyfile.codec
+
+@HAVE_DOXYGEN_TRUE@install-data-hook:
+@HAVE_DOXYGEN_TRUE@	cd $(DESTDIR)$(doc_htmldir) && tar xf html.tar && rm -f html.tar
+
+@HAVE_DOXYGEN_TRUE@uninstall-hook:
+@HAVE_DOXYGEN_TRUE@	cd $(DESTDIR)$(doc_htmldir) && rm -rf {core,gsm,vty,codec}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
